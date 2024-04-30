@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { crawlPage } from "./crawl.js";
+
 function main() {
     const args = process.argv.slice(2);
     if (args.length === 0) {
@@ -11,7 +13,8 @@ function main() {
     }
 
     const baseURL = args[0];
-    console.log(`Web Crawling starting at: "${baseURL}"`);
+    console.log(`Web Crawling starting at: "${baseURL}..."`);
+    crawlPage(baseURL);
 }
 
 main()
