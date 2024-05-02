@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { crawlPage } from "./crawl.js";
+import { printReport } from "./report.js";
 
 async function main() {
     const args = process.argv.slice(2);
@@ -14,7 +15,7 @@ async function main() {
 
     const baseURL = args[0];
     console.log(`Crawling Root URL: "${baseURL}"...`);
-    console.log(await crawlPage(baseURL));  
+    printReport(await crawlPage(baseURL));
 }
 
 main()
