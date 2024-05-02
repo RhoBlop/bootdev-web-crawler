@@ -1,8 +1,38 @@
 import { JSDOM } from "jsdom";
 
-export async function crawlPage(rootURL) {
-    // fetching for URL html
-    const response = await fetch(rootURL, { method: "GET" });
+export async function crawlPage(baseURL, currURL = baseURL, visitedPages = {}, depth = 0) {
+    // URL doesn't belong to the same domain
+    if (getURLDomain(currURL) !== getURLDomain(baseURL)) {
+        return visitedPages;
+    }
+    // sets or increments visited URLs
+    const normalizedURL = normalizeURL(currURL);
+    if (visitedPages[normalizedURL] > 0) {
+        visitedPages[normalizedURL]++;
+        return visitedPages;
+    }
+    visitedPages[normalizedURL] = 1;
+    
+    // get html
+    let html;
+    try {
+        html = await getPageHTML(currURL);
+    } catch (error) {
+        return visitedPages;
+    }
+
+    // recursion logic
+    const pageURLs = extractURLsFromHTML(html, baseURL);
+    for (const url of pageURLs) {
+        visitedPages = await crawlPage(baseURL, url, visitedPages, depth++);
+    }
+
+    return visitedPages;
+}
+
+export async function getPageHTML(url) {
+    // fetching for page's html
+    const response = await fetch(url, { method: "GET" });
     const { status, statusText, headers } = response;
     if (status >= 400) {
         throw new Error(`Status code of - ${status} ${statusText}`);
@@ -12,8 +42,7 @@ export async function crawlPage(rootURL) {
     }
 
     // got html successfully
-    const html = await response.text();
-    console.log(extractURLsFromHTML(html, rootURL));
+    return await response.text();
 }
 
 /**
@@ -30,6 +59,15 @@ export function normalizeURL(url) {
         fullPath = fullPath.slice(0, -1);
     }
     return fullPath;
+}
+
+/**
+ * Get the URL domain '-'
+ * @param {string} url
+ * @returns {string} domain name
+ */
+export function getURLDomain(url) {
+    return (new URL(url)).hostname;
 }
 
 /**

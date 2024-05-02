@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { crawlPage } from "./crawl.js";
 
-function main() {
+async function main() {
     const args = process.argv.slice(2);
     if (args.length === 0) {
         console.log("No URL argument received");
@@ -13,8 +13,8 @@ function main() {
     }
 
     const baseURL = args[0];
-    console.log(`Web Crawling starting at: "${baseURL}..."`);
-    crawlPage(baseURL);
+    console.log(`Crawling Root URL: "${baseURL}"...`);
+    console.log(await crawlPage(baseURL));  
 }
 
 main()
