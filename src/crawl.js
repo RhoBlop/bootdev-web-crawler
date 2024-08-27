@@ -1,6 +1,6 @@
 import { JSDOM } from "jsdom";
 
-export async function crawlPage(baseURL, currURL = baseURL, visitedPages = {}, depth = 0) {
+export async function crawlPage(baseURL, currURL = baseURL, visitedPages = {}) {
     // URL doesn't belong to the same domain
     if (getURLDomain(currURL) !== getURLDomain(baseURL)) {
         return visitedPages;
@@ -24,7 +24,7 @@ export async function crawlPage(baseURL, currURL = baseURL, visitedPages = {}, d
     // recursion logic
     const pageURLs = extractURLsFromHTML(html, baseURL);
     for (const url of pageURLs) {
-        visitedPages = await crawlPage(baseURL, url, visitedPages, depth++);
+        visitedPages = await crawlPage(baseURL, url, visitedPages);
     }
 
     return visitedPages;
